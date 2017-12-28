@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Thank you!</title>
+    </head>
+    <body>
+
+        <h1>Thank you! You have been signed up to the event!</h1>
+        
+        <h2>Complete list of signed up people</h2>
+        <!-- Vulnerability 4 - Top 10 2013-A3-Cross-Site Scripting (XSS) -->
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Address</th>
+            </tr>
+            <tr th:each="signup : ${signups}">           
+                <td th:utext="${signup.name}">Signup name</td>
+                <td th:utext="${signup.address}">Signup address</td>
+            </tr>
+        </table>
+
+    </body>
+</html>
