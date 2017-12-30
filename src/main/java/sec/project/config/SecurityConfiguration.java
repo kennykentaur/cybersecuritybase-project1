@@ -20,14 +20,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        
-        // Vulnerability 2 - Top 10 2013-A8-Cross-Site Request Forgery (CSRF)
-        http.csrf().disable();
-        
-        
-        // Vulnerability 3 - Top 10 2013-A5-Security Misconfiguration
+        // Vulnerability 2 - Fix. Spring CSRF is now (default) on.
+            
+        // Vulnerability 3 - Fix. Block access to admin console.
+        // Vulnerability 5 - Fix. /dropevent is only allowed by the logged in admins (ted)
         http.authorizeRequests()
-                .anyRequest().permitAll();
+                .antMatchers("/h2-console/*").denyAll()
+                .antMatchers("/form").permitAll()
+                .antMatchers("/done").permitAll()
+                .anyRequest().authenticated();
+        http.formLogin()
+                .permitAll();
+        
     }
 
     @Autowired

@@ -37,7 +37,7 @@ public class SignupController {
         return "done";
     }
 
-    // Vulnerability 5 - Top 10 2013-A7-Missing Function Level Access Control
+    // Vulnerability 5 - This gets addressed in SecurityConfiguration.java
     @RequestMapping(value = "/dropevent", method = RequestMethod.GET)
     public String dropEvent() {
         signupRepository.deleteAll();
