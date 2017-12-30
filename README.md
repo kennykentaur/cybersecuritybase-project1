@@ -43,6 +43,8 @@ I've focused on the following 5 vulnerabilities
 **2. Cross-Site Request Forgery (CSRF)**
 
    The form for filling out name and address is vulnerable to CSRF. 
+   You can see it by viewing the source code of when on the /form page and not that there is no csrf variable being added.
+   This is due to http.csrf().disable() being set in the HttpSecurity
    
    Steps to reproduce/find
    1. Download the vulnerable codebase from https://github.com/kennykentaur/cybersecuritybase-project1
@@ -53,11 +55,12 @@ I've focused on the following 5 vulnerabilities
    6. Verify by accessing http://localhost:8080/done and note that you have name: `CSRF` & address: `CSRF` 
    
    The fix for it can be viewed in the code diff at https://github.com/kennykentaur/cybersecuritybase-project1/compare/vuln_fixed?expand=1#diff-f65006aaf8157f0aed7aec7733b529df
-   
+   The http.csrf().disable() is removed, which makes it fall back to Spring default which is having CSRF prevention enabled.
 
 **3. Security Misconfiguration**
    
    Since there's no security applied to the whole web-tree the H2 Console is accessible to anyone
+   There is not even authentication required to access it. This is bad. 
    
    Steps to reproduce/find
    1. Download the vulnerable codebase from https://github.com/kennykentaur/cybersecuritybase-project1
@@ -65,14 +68,15 @@ I've focused on the following 5 vulnerabilities
    3. Make sure it is up and running, and open a browser towards http://localhost:8080/h2-console/
    4. You should now see the H2 console window
    
-   The fix I made was to block access to the console completely. 
+   The fix I made was to block access to the console completely. Not even available for authenticated users.
    It can be viewed at https://github.com/kennykentaur/cybersecuritybase-project1/compare/vuln_fixed?expand=1#diff-f65006aaf8157f0aed7aec7733b529df
    Under the section for `// Vulnerability 3 - Fix. Block access to admin console." from row 25 and down`.
    
 **4. Cross-Site Scripting (XSS)**
 
    The Thymeleaf th:utext in the /done page allows an attacker to inject javascript code into the /form page.
-   This means it's possible to achieve Cross-Site Scripting (XSS).
+   This means it's possible to achieve stored Cross-Site Scripting (XSS).
+   This would impact any user accessing the /done page further on, hence it could target lots of users over time.
    
    Steps to reproduce/find
    1. Download the vulnerable codebase from https://github.com/kennykentaur/cybersecuritybase-project1
@@ -82,14 +86,14 @@ I've focused on the following 5 vulnerabilities
    5. Click submit
    6. You will now be redirected to the done page which will load the `<script>` and prompt you with an alert-box saying Hi!
    
-   This can be addressed by using Thymeleaf's `th:text` that will sanitize the script input into regular html.
+   This can be addressed by using Thymeleaf's `th:text` that will sanitize the script input (or any HTML) into regular plain text.
    The fix I made can be viewed at https://github.com/kennykentaur/cybersecuritybase-project1/compare/vuln_fixed?expand=1#diff-cfb45e6ffff8af929c672faf0f1419de
 
    
 **5. Missing Function Level Access Control**
 
    The function to drop all registrations to the event is available at /dropevent
-   This function should require that you're logged in, in order to access it to trigger a drop of all event attendees.
+   To use this function it be should required that you're logged in, in order to access it to trigger a drop of all event attendees.
    But it is not, leaving it open to any attacker.
    
    Steps to reproduce/find
